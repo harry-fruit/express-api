@@ -1,23 +1,21 @@
-import { database } from '../database/config/database'
-const express = require('express') //CHANGEME
+import 'module-alias/register'
+import { database } from '@/src/database/config/database'
+import express from 'express'
+import { createUser } from './users/handlers'
+import { syncModels } from '../database/config/syncModels'
 
 const app = express()
 const port = 3000
+
+app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req:any, res:any) => {
     res.send('Hello World!')
 })
 
-app.use(express.urlencoded({ extended: true }))
-
-async function testDatabase () {
-    try {
-        await database.authenticate();
-        console.log('Connection has been established successfully.')
-    } catch (e) {
-        console.error('Unable to connect to the database:', e)
-    }
+const bla = createUser() // Está precisando definir para dps sincronizar. Procurar uma forma de sincronizar td de uma vez pela CLI.
+if (process.env.NODE_ENV === 'development') {
+    syncModels()
 }
-testDatabase()
 
 app.listen(port, () => console.log(`Listen at http://localhost:${port}`))
