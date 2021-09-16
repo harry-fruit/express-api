@@ -1,0 +1,11 @@
+version: '3'
+services:
+  db_api:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root123
+      POSTGRES_DB: express-api
+    ports:
+      - 5432:5432
