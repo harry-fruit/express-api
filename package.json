@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node ./dist/modules/main.js",
-    "start:dev": "nodemon --watch src/** --ext ts,json --ignore src/**/*.spec.ts --exec ts-node src/modules/main.ts"
+    "start:dev": "nodemon --watch src/** --ext ts,json --ignore src/**/*.spec.ts --exec ts-node src/modules/main.ts",
+    "migration:run": "sequelize db:migrate",
+    "migration:revert": "sequelize db:migrate:undo:all"
   },
   "repository": {
     "type": "git",

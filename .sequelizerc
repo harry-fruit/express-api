@@ -1,8 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  'config': './src/database/config/database.ts',
-  'models-path': './src/database/models/*',
+  'config': './src/database/config/database.config.json',
+  'models-path': './src/database/models',
   'seeders-path': './src/database/seeders',
   'migrations-path': './src/database/migrations',
 };
