@@ -1,11 +1,11 @@
 export interface UserInterface {
-  id: string;
+  id?: string;
   username:string;
   password: string;
   email: string;
-  profilePic: string;
+  profilePic?: string;
   isActive: boolean;
-  status: string;
-  createdAt: Date;
-  updatedAt: Date;
+  status?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

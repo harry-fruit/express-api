@@ -1,21 +1,14 @@
-import 'module-alias/register'
-import { database } from '@/src/database/config/database'
-import express from 'express'
-import { createUser, findUser } from './users/handlers'
+import "module-alias/register";
+import express from "express";
+import { userRouter } from "@/src/modules/user/router";
 
-const app = express()
-const port = 3000
+export const app = express();
+const port = 3000;
 
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.get('/', (req:any, res:any) => {
-    res.send('Hello World!')
-});
+//Routes Here
+app.use("/users", userRouter);
 
-(async () => {
-    const user = await findUser()
-    console.log(user)
-})();
-
-console.log(Promise.all([findUser()]))
-app.listen(port, () => console.log(`Listen at http://localhost:${port}`))
+app.listen(port, () => console.log(`Listen at http://localhost:${port}`));
