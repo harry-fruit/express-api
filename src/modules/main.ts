@@ -11,4 +11,5 @@ app.use(express.json());
 //Routes Here
 app.use("/users", userRouter);
 
+/* eslint no-console: ["off"] */
 app.listen(port, () => console.log(`Listen at http://localhost:${port}`));
