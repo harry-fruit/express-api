@@ -1,13 +1,20 @@
 import { User } from "@/src/modules/user/core/entities/user.entity";
 import { UserInterface } from "@/src/modules/user/core/interfaces/user.interface";
 import { FindAllFilterInterface } from "@/src/modules/core/interfaces/findAllFilter.interface";
+import { ErrorHandler } from "@/src/utils/errorHandler";
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
+import { Op } from "sequelize";
 
 export class UserRepository {
 	public async findOneById(id: string):Promise<UserInterface> {
-		const user: UserInterface = (await User.findOne({
-			where: { id },
-		})) as unknown as UserInterface;
-		return user;
+		try{
+			const user: UserInterface = (await User.findOne({
+				where: { id },
+			})) as unknown as UserInterface;
+			return user;
+		} catch(error) {
+			throw new ErrorHandler(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR, error);
+		}
 	}
 
 	public async findAll(
@@ -23,8 +30,25 @@ export class UserRepository {
 		return users;
 	}
 
-	public async create(payload: UserInterface): Promise<UserInterface> {
-		const user: UserInterface = await User.create(payload) as unknown as UserInterface;
-		return user;
+	public async create(payload: UserInterface): Promise<UserInterface | boolean> {
+		try {
+			const { username, email } = payload;
+			const userExists = await User.findOne({ where: {
+				[Op.or]: [{ username }, { email }]
+			}}) as unknown as UserInterface | null;
+			if (userExists) {
+				return false;
+			}
+			const user: UserInterface = await User.create(payload) as unknown as UserInterface;
+			return user;
+
+		} catch (error) {
+			throw new ErrorHandler(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public async delete(id: string): Promise<boolean> {
+		const response: boolean = await User.destroy({ where: { id } }) as unknown as boolean;
+		return response;
 	}
 }

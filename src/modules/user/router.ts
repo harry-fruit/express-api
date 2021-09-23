@@ -9,6 +9,8 @@ import {
 } from "@/src/modules/user/handlers/index";
 import { HttpResponse } from "@/src/utils/http-response";
 import { ErrorHandler } from "@/src/utils/errorHandler";
+import { UserDto } from "./core/dtos/user.dto";
+import { deleteUserHandler } from "./handlers/delete-user";
 
 export const userRouter = express.Router();
 
@@ -22,9 +24,11 @@ userRouter.get("/", async (request: Request, response: Response) => {
 			currentPage: currentPage,
 		};
 		const users: UserInterface[] = await findAllUsersHandler(findFilters);
-		const httpResponse = new HttpResponse(StatusCodes.OK, ReasonPhrases.OK, users);
+		const httpResponse: HttpResponse<UserInterface[]> = new HttpResponse(StatusCodes.OK, ReasonPhrases.OK, users);
 
-		response.send(httpResponse);
+		response
+			.status(httpResponse.status)
+			.send(httpResponse);
 	} catch (error) {
 		throw new ErrorHandler(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR);
 	}
@@ -33,15 +37,34 @@ userRouter.get("/", async (request: Request, response: Response) => {
 userRouter.get("/:id", async (request: Request, response: Response) => {
 	try{
 		const { id } = request.params;
+
 		const user: UserInterface = await findUserHandler(id) as unknown as UserInterface;
-		response.send(user);
+		const httpResponse: HttpResponse<UserInterface> = new HttpResponse(StatusCodes.OK, ReasonPhrases.OK, user);
+		response
+			.status(httpResponse.status)
+			.send(httpResponse);
 	} catch (error) {
 		throw new ErrorHandler(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR);
 	}
 });
 
 userRouter.post("/", async (request: Request, response: Response) => {
-	const payload: UserInterface = await request.body;
-	const user = await createUserHandler(payload);
-	response.send(user);
+	try {
+		const payload: UserDto = await request.body;
+		const httpResponse = await createUserHandler(payload);
+		response
+			.status(httpResponse.status)
+			.send(httpResponse);
+	} catch (error) {
+		throw new ErrorHandler(StatusCodes.INTERNAL_SERVER_ERROR, ReasonPhrases.INTERNAL_SERVER_ERROR);
+	}
+});
+
+userRouter.delete("/", async (request:Request, response: Response) => {
+	const { id } = request.body;
+
+	const httpResponse = await deleteUserHandler(id);
+	response
+		.status(httpResponse.status)
+		.send(httpResponse);
 });
