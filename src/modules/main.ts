@@ -1,23 +1,15 @@
-import { database } from '../database/config/database'
-const express = require('express') //CHANGEME
+import "module-alias/register";
+import express from "express";
+import { userRouter } from "@/src/modules/user/router";
 
-const app = express()
-const port = 3000
+const app = express();
+const port = 3000;
 
-app.get('/', (req:any, res:any) => {
-    res.send('Hello World!')
-})
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.use(express.urlencoded({ extended: true }))
+//Routes Here
+app.use("/users", userRouter);
 
-async function testDatabase () {
-    try {
-        await database.authenticate();
-        console.log('Connection has been established successfully.')
-    } catch (e) {
-        console.error('Unable to connect to the database:', e)
-    }
-}
-testDatabase()
-
-app.listen(port, () => console.log(`Listen at http://localhost:${port}`))
+/* eslint no-console: ["off"] */
+app.listen(port, () => console.log(`Listen at http://localhost:${port}`));
